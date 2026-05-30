@@ -9,24 +9,23 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll()    { return request.cookies.getAll(); },
-        setAll(cookiesToSet) {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: object }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({ request });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options as any)
           );
         },
       },
     }
   );
 
-  // IMPORTANTE: No agregar código entre createServerClient y getUser()
   const { data: { user } } = await supabase.auth.getUser();
-
   const { pathname } = request.nextUrl;
-
-  // Rutas que requieren sesión activa
   const rutasProtegidas = ["/comerciante", "/admin", "/registro-negocio"];
   const necesitaAuth = rutasProtegidas.some((r) => pathname.startsWith(r));
 
@@ -42,7 +41,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|offline.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|offline.html).*)"],
 };
