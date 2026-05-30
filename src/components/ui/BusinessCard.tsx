@@ -50,7 +50,7 @@ export default function BusinessCard({ negocio }: Props) {
         <span className="flex items-center gap-1 text-yellow-500 font-medium">
           <Star size={11} fill="currentColor" />
           {negocio.calificacion.toFixed(1)}
-          <span className="text-neutral-300">({negocio.totalCalificaciones})</span>
+          <span className="text-neutral-300">({negocio.total_calificaciones})</span>
         </span>
       </div>
 
