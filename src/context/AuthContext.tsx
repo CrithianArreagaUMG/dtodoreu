@@ -71,13 +71,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // ── Login como Comerciante ────────────────────────────────────────────────
-  // Guarda en localStorage una bandera para que el callback sepa que debe
-  // asignar rol=comerciante tras el redirect de Google
+  // Pasa ?rol=comerciante en la URL de retorno para que el callback del
+  // servidor lo lea y asigne el rol correcto desde el principio.
+  // Antes se usaba localStorage, que el servidor no puede leer → los
+  // comerciantes siempre se creaban como "visitante".
   const loginComerciante = async () => {
-    localStorage.setItem("dtodoreu_intento_rol", "comerciante");
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options:  { redirectTo: `${window.location.origin}/auth/callback` },
+      options:  { redirectTo: `${window.location.origin}/auth/callback?rol=comerciante` },
     });
   };
 

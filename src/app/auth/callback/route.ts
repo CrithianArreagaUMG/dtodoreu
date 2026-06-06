@@ -5,8 +5,10 @@ import { ROLES } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/directorio";
+  const code     = searchParams.get("code");
+  const next     = searchParams.get("next") ?? "/directorio";
+  // Intención de rol pasada desde loginComerciante() vía redirectTo
+  const rolParam = searchParams.get("rol");
 
   if (!code) return NextResponse.redirect(`${origin}/login?error=no_code`);
 
@@ -38,22 +40,39 @@ export async function GET(request: NextRequest) {
 
   const { data: perfil } = await supabase
     .from("usuarios")
-    .select("id, rol")
+    .select("id, rol, estado")
     .eq("id", user.id)
     .single();
 
+  const quiereSerComerciante = rolParam === "comerciante";
+
   if (!perfil) {
+    // ── Usuario nuevo: crear con el rol apropiado ─────────────────────────
+    const nuevoRol    = quiereSerComerciante ? ROLES.COMERCIANTE : ROLES.VISITANTE;
+    const nuevoEstado = quiereSerComerciante ? "pendiente"       : "activo";
     await supabase.from("usuarios").upsert({
-      id: user.id,
+      id:     user.id,
       nombre: user.user_metadata?.full_name ?? user.email ?? "Usuario",
-      email: user.email ?? "",
-      foto: user.user_metadata?.avatar_url ?? "",
-      rol: ROLES.VISITANTE,
+      email:  user.email ?? "",
+      foto:   user.user_metadata?.avatar_url ?? "",
+      rol:    nuevoRol,
+      estado: nuevoEstado,
     });
+    if (quiereSerComerciante) return NextResponse.redirect(`${origin}/comerciante`);
+    return NextResponse.redirect(`${origin}${next}`);
   }
 
-  const rol = perfil?.rol ?? ROLES.VISITANTE;
-  if (rol === ROLES.ADMIN) return NextResponse.redirect(`${origin}/admin`);
+  // ── Usuario existente: si era Visitante y quiere ser Comerciante → actualizar ──
+  if (quiereSerComerciante && perfil.rol === ROLES.VISITANTE) {
+    await supabase
+      .from("usuarios")
+      .update({ rol: ROLES.COMERCIANTE, estado: "pendiente" })
+      .eq("id", user.id);
+    return NextResponse.redirect(`${origin}/comerciante`);
+  }
+
+  const rol = perfil.rol ?? ROLES.VISITANTE;
+  if (rol === ROLES.ADMIN)       return NextResponse.redirect(`${origin}/admin`);
   if (rol === ROLES.COMERCIANTE) return NextResponse.redirect(`${origin}/comerciante`);
   return NextResponse.redirect(`${origin}${next}`);
 }
