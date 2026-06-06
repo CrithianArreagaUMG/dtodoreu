@@ -19,17 +19,15 @@ export const CATEGORIAS = [
 
 // ── Zonas urbanas de Retalhuleu ───────────────────────────────────────────────
 export const ZONAS = [
-  { id: "zona1",  label: "Zona 1 — Centro Histórico" },
-  { id: "zona2",  label: "Zona 2 — Las Rosas" },
-  { id: "zona3",  label: "Zona 3 — Santa Lucía" },
-  { id: "zona4",  label: "Zona 4 — El Buen Pastor" },
-  { id: "zona5",  label: "Zona 5 — Champerico Km 0" },
-  { id: "colonia_maya",   label: "Colonia Maya" },
-  { id: "colonia_olmeca", label: "Colonia Olmeca" },
-  { id: "col_campo_real", label: "Campo Real" },
-  { id: "barrio_san_nicolas", label: "Barrio San Nicolás" },
-  { id: "barrio_el_calvario",  label: "Barrio El Calvario" },
-  { id: "aldea_el_palmar",     label: "Aldea El Palmar (límite urbano)" },
+  { id: "zona1",                  label: "Zona 1" },
+  { id: "zona2",                  label: "Zona 2" },
+  { id: "zona3",                  label: "Zona 3" },
+  { id: "zona4",                  label: "Zona 4" },
+  { id: "zona5",                  label: "Zona 5" },
+  { id: "zona6",                  label: "Zona 6" },
+  { id: "camino_la_verde",        label: "Camino la verde" },
+  { id: "carretera_champerico",   label: "Carretera a Champerico" },
+  { id: "calzada_las_palmas",     label: "Calzada las palmas" },
 ];
 
 // ── Roles ─────────────────────────────────────────────────────────────────────
